@@ -4,7 +4,6 @@ import grails.test.*
 import org.junit.Test
 import org.codehaus.groovy.grails.plugins.web.taglib.RenderTagLib
 import uk.co.desirableobjects.ajaxuploader.exception.MissingRequiredAttributeException
-import org.codehaus.groovy.grails.plugins.web.taglib.ApplicationTagLib
 import uk.co.desirableobjects.ajaxuploader.exception.UnknownAttributeException
 import uk.co.desirableobjects.ajaxuploader.exception.InvalidAttributeValueException
 
@@ -17,10 +16,47 @@ class AjaxUploaderTagLibTests extends TagLibUnitTestCase {
         super.setUp()
         // TODO: If grails taglib testing wasn't so utterly obscure, this could be better.
         AjaxUploaderTagLib.metaClass.createLink = { attrs -> return "/file/upload" }
+        AjaxUploaderTagLib.metaClass.javascript = { attrs -> return '<script type="text/javascript" src="/js/uploader.js"></script>' }
+        AjaxUploaderTagLib.metaClass.resource = { attrs -> return "/${attrs.dir}/${attrs.file}" }
+
     }
 
     protected void tearDown() {
         super.tearDown()
+    }
+
+    void testCssInclude() {
+
+        tagLib.head([:], "")
+
+        assertContains '<style type="text/css" media="screen">'
+        assertContains '@import url( /css/uploader.css );'
+        assertContains '</style>'
+
+    }
+
+    void testJsInclude() {
+
+         tagLib.head([:], "")
+
+         assertContains '<script type="text/javascript" src="/js/uploader.js">'
+
+    }
+
+    void testExcludeCss() {
+
+        tagLib.head([exclude:'css'], "")
+
+        assertDoesNotContain '@import /css/uploader.css'
+
+    }
+
+     void testExcludeAnythingElse() {
+
+        shouldFail(InvalidAttributeValueException) {
+            tagLib.head([exclude:'js'], "")
+        }
+
     }
 
     void testTagRequiresId() {
@@ -46,6 +82,14 @@ class AjaxUploaderTagLibTests extends TagLibUnitTestCase {
         assertContains 'var au_testAjaxUploader = new qq.FileUploader({'
         assertContains "element: document.getElementById('au-testAjaxUploader')"
         assertContains "action: '/file/upload'"
+
+    }
+
+    void testMissingUrlParameterUsesDefaultController() {
+
+        tagLib.uploader([id:uploaderUid], "")
+
+        assertContains "action: '/ajaxUpload/upload'"
 
     }
 

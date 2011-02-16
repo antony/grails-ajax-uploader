@@ -1,15 +1,13 @@
 package uk.co.desirableobjects.ajaxuploader
 
 import uk.co.desirableobjects.ajaxuploader.exception.MissingRequiredAttributeException
-import java.util.LinkedList.Entry
 import uk.co.desirableobjects.ajaxuploader.exception.UnknownAttributeException
 import uk.co.desirableobjects.ajaxuploader.exception.InvalidAttributeValueException
 
 class AjaxUploaderTagLib {
 
     static final Map<String, List<String>> REQUIRED_ATTRIBUTES = [
-            id: [],
-            url: []
+            id: []
     ]
 
     static final Map<String, List<String>> OPTIONAL_ATTRIBUTES = [
@@ -18,7 +16,8 @@ class AjaxUploaderTagLib {
             minSizeLimit: [],
             debug: ['true', 'false'],
             params: [],
-            messages: []
+            messages: [],
+            url: []
     ]
 
     static final Map<String, List<String>> SEPARATELY_HANDLED_ATTRIBUTES = [
@@ -30,6 +29,19 @@ class AjaxUploaderTagLib {
     static Map<String, List<String>> ALL_ATTRIBUTES = [:]
 
     static namespace = 'uploader'
+
+    def head = { attrs, body ->
+        out << g.javascript([library:'fileuploader', plugin:'grails-image-upload'])
+        if (attrs.exclude) {
+            if (attrs.exclude.toString()!='css') {
+                throw new InvalidAttributeValueException('exclude', attrs.exclude, ['css'])
+            }
+        } else {
+            out << '<style type="text/css" media="screen">'
+            out << "   @import url( ${resource(dir:'css', file:'uploader.css')} );"
+            out << "</style>"
+        }
+    }
 
     def uploader = { attrs, body ->
 
@@ -51,7 +63,11 @@ class AjaxUploaderTagLib {
         out << """
             var au_${uploaderUid} = new qq.FileUploader({
             element: document.getElementById('au-${uploaderUid}'),
-            action: '${createLink(attrs)}'
+        """
+
+        String url = attrs.url ? createLink(attrs) : '/ajaxUpload/upload'
+        out << """
+            action: '${url}'
         """
 
         out << doAttributes(attrs)
