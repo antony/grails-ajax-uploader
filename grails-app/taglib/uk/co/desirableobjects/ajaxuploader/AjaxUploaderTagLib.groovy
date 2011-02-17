@@ -32,15 +32,10 @@ class AjaxUploaderTagLib {
 
     def head = { attrs, body ->
         out << g.javascript([library:'fileuploader', plugin:'ajax-uploader'], "")
-        if (attrs.exclude) {
-            if (attrs.exclude.toString()!='css') {
-                throw new InvalidAttributeValueException('exclude', attrs.exclude, ['css'])
-            }
-        } else {
-            out << '<style type="text/css" media="screen">'
-            out << "   @import url( ${resource(dir:"${pluginContextPath}/css", file:'uploader.css')} );"
-            out << "</style>"
-        }
+        String cssPath = attrs.css ?: resource(dir:"${pluginContextPath}/css", file:'uploader.css')
+        out << '<style type="text/css" media="screen">'
+        out << "   @import url( ${cssPath} );"
+        out << "</style>"
     }
 
     def uploader = { attrs, body ->

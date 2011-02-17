@@ -52,17 +52,10 @@ class AjaxUploaderTagLibTests extends TagLibUnitTestCase {
 
     void testExcludeCss() {
 
-        tagLib.head([exclude:'css'], "")
+        tagLib.head([css:'/myapp/mycss.css'], "")
 
-        assertDoesNotContain '@import /css/uploader.css'
-
-    }
-
-     void testExcludeAnythingElse() {
-
-        shouldFail(InvalidAttributeValueException) {
-            tagLib.head([exclude:'js'], "")
-        }
+        assertDoesNotContain '@import url( /css/uploader.css )'
+        assertContains '@import url( /myapp/mycss.css )'
 
     }
 
@@ -154,8 +147,7 @@ class AjaxUploaderTagLibTests extends TagLibUnitTestCase {
 
     private assertContains(String expected) {
 
-
-         println tagLib.out.toString()
+        println tagLib.out.toString()
         assertTrue tagLib.out.toString().contains(expected)
 
     }
