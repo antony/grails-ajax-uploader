@@ -6,6 +6,8 @@ import uk.co.desirableobjects.ajaxuploader.exception.InvalidAttributeValueExcept
 
 class AjaxUploaderTagLib {
 
+    String callbackFunctions
+
     static final Map<String, List<String>> REQUIRED_ATTRIBUTES = [
             id: []
     ]
@@ -65,10 +67,17 @@ class AjaxUploaderTagLib {
 
         doAttributes(attrs)+
         doParamsBlock(attrs)+
+        doCallbacks(attrs)+
 
         """
             });
         """)
+    }
+
+    private String doCallbacks(Map<String, String> attrs) {
+
+        return callbackFunctions ?: ''
+
     }
 
     private String doAttributes(Map<String, String> attrs) {
@@ -132,6 +141,41 @@ class AjaxUploaderTagLib {
                 throw new InvalidAttributeValueException(attribute.key, attributeValue, allowedValues)
             }
         }
+    }
+
+    def onComplete = { attrs, body ->
+
+        callbackFunctions += """,
+onComplete: function(id, fileName, responseJSON) { ${body()} }"""
+
+    }
+
+    def onSubmit = { attrs, body ->
+
+        callbackFunctions += """,
+onSubmit: function(id, fileName) { ${body()} }"""
+
+    }
+
+    def onProgress = { attrs, body ->
+
+        callbackFunctions += """,
+onProgress: function(id, fileName, loaded, total) { ${body()} }"""
+
+    }
+
+    def onCancel = { attrs, body ->
+
+        callbackFunctions += """,
+onCancel: function(id, fileName) { ${body()} }"""
+
+    }
+
+    def showMessage = { attrs, body ->
+
+        callbackFunctions += """,
+showMessage: function(message) { ${body()} }"""
+
     }
 
 }

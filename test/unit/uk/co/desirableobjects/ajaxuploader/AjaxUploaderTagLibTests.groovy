@@ -12,6 +12,7 @@ class AjaxUploaderTagLibTests extends TagLibUnitTestCase {
     static final String uploaderUid = 'testAjaxUploader'
     static final Map EXAMPLE_PARAMETERS = [myKey: 'myValue', myOtherKey: 5]
     static final String DUMMY_PLUGIN_CONTEXT_PATH = 'plugins/ajax-uploader-1.0'
+    static final String DUMMY_CALLBACK = "alert(filename+' yadda yadda')"
 
     protected void setUp() {
         super.setUp()
@@ -145,9 +146,62 @@ class AjaxUploaderTagLibTests extends TagLibUnitTestCase {
 
     }
 
+    void testOnCompleteCallback() {
+
+        String onCompleteFunction = "alert(filename+' is complete')"
+
+        tagLib.uploader([id:uploaderUid],
+            tagLib.onComplete([:], { return onCompleteFunction })
+        )
+
+        assertContains "onComplete: function(id, fileName, responseJSON) { ${onCompleteFunction} }"
+
+    }
+
+    void testOnSubmitCallback() {
+
+        String onSubmitFunction = "alert(filename+' is submitted')"
+
+        tagLib.uploader([id:uploaderUid],
+            tagLib.onSubmit([:], { return onSubmitFunction })
+        )
+
+        assertContains "onSubmit: function(id, fileName) { ${onSubmitFunction} }"
+
+    }
+
+    void testOnProgressCallback() {
+
+        tagLib.uploader([id:uploaderUid],
+            tagLib.onProgress([:], { return DUMMY_CALLBACK })
+        )
+
+        assertContains "onProgress: function(id, fileName, loaded, total) { ${DUMMY_CALLBACK} }"
+
+    }
+
+    void testOnCancelCallback() {
+
+        tagLib.uploader([id:uploaderUid],
+            tagLib.onCancel([:], { return DUMMY_CALLBACK })
+        )
+
+        assertContains "onCancel: function(id, fileName) { ${DUMMY_CALLBACK} }"
+
+    }
+
+    void testShowMessage() {
+
+        tagLib.uploader([id:uploaderUid],
+            tagLib.showMessage([:], { return DUMMY_CALLBACK })
+        )
+
+        assertContains "showMessage: function(message) { ${DUMMY_CALLBACK} }"
+
+    }
+
     private assertContains(String expected) {
 
-        println tagLib.out.toString()
         assertTrue tagLib.out.toString().contains(expected)
 
     }
