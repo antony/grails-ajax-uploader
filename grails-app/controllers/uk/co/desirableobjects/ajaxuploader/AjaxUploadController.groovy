@@ -1,4 +1,4 @@
-package grails.ajax.uploader
+package uk.co.desirableobjects.ajaxuploader
 
 import grails.converters.JSON
 import static org.codehaus.groovy.grails.commons.ConfigurationHolder.config as Config

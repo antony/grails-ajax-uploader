@@ -11,13 +11,20 @@ class AjaxUploaderTagLibTests extends TagLibUnitTestCase {
 
     static final String uploaderUid = 'testAjaxUploader'
     static final Map EXAMPLE_PARAMETERS = [myKey: 'myValue', myOtherKey: 5]
+    static final String DUMMY_PLUGIN_CONTEXT_PATH = 'plugins/ajax-uploader-1.0'
 
     protected void setUp() {
         super.setUp()
         // TODO: If grails taglib testing wasn't so utterly obscure, this could be better.
         AjaxUploaderTagLib.metaClass.createLink = { attrs -> return "/file/upload" }
-        AjaxUploaderTagLib.metaClass.javascript = { attrs -> return '<script type="text/javascript" src="/js/uploader.js"></script>' }
+        AjaxUploaderTagLib.metaClass.javascript = { attrs, body ->
+            if (attrs.library) {
+                return """<script type="text/javascript" src="${attrs.plugin}/js/fileuploader.js"></script>"""
+            }
+            return """<script type="text/javascript">${body}</script>"""
+        }
         AjaxUploaderTagLib.metaClass.resource = { attrs -> return "/${attrs.dir}/${attrs.file}" }
+        AjaxUploaderTagLib.metaClass.pluginContextPath = DUMMY_PLUGIN_CONTEXT_PATH
 
     }
 
@@ -30,7 +37,7 @@ class AjaxUploaderTagLibTests extends TagLibUnitTestCase {
         tagLib.head([:], "")
 
         assertContains '<style type="text/css" media="screen">'
-        assertContains '@import url( /css/uploader.css );'
+        assertContains "@import url( /${DUMMY_PLUGIN_CONTEXT_PATH}/css/uploader.css );"
         assertContains '</style>'
 
     }
@@ -39,7 +46,7 @@ class AjaxUploaderTagLibTests extends TagLibUnitTestCase {
 
          tagLib.head([:], "")
 
-         assertContains '<script type="text/javascript" src="/js/uploader.js">'
+         assertContains """<script type="text/javascript" src="ajax-uploader/js/fileuploader.js">"""
 
     }
 
@@ -79,9 +86,11 @@ class AjaxUploaderTagLibTests extends TagLibUnitTestCase {
 
         tagLib.uploader([id:uploaderUid, url:[controller:'file', action:'upload']], "")
 
+        assertContains '<script type="text/javascript">'
         assertContains 'var au_testAjaxUploader = new qq.FileUploader({'
         assertContains "element: document.getElementById('au-testAjaxUploader')"
         assertContains "action: '/file/upload'"
+        assertContains '</script>'
 
     }
 
@@ -145,13 +154,13 @@ class AjaxUploaderTagLibTests extends TagLibUnitTestCase {
 
     private assertContains(String expected) {
 
-        println tagLib.out.toString()
+
+         println tagLib.out.toString()
         assertTrue tagLib.out.toString().contains(expected)
 
     }
 
     private assertDoesNotContain(String unexpected) {
-        println tagLib.out.toString()
         assertFalse tagLib.out.toString().contains(unexpected)
     }
 }

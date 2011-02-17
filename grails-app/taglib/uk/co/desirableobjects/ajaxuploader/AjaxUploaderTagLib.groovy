@@ -31,14 +31,14 @@ class AjaxUploaderTagLib {
     static namespace = 'uploader'
 
     def head = { attrs, body ->
-        out << g.javascript([library:'fileuploader', plugin:'grails-image-upload'])
+        out << g.javascript([library:'fileuploader', plugin:'ajax-uploader'], "")
         if (attrs.exclude) {
             if (attrs.exclude.toString()!='css') {
                 throw new InvalidAttributeValueException('exclude', attrs.exclude, ['css'])
             }
         } else {
             out << '<style type="text/css" media="screen">'
-            out << "   @import url( ${resource(dir:'css', file:'uploader.css')} );"
+            out << "   @import url( ${resource(dir:"${pluginContextPath}/css", file:'uploader.css')} );"
             out << "</style>"
         }
     }
@@ -60,22 +60,20 @@ class AjaxUploaderTagLib {
             </div>
         """
 
-        out << """
+        String url = attrs.url ? createLink(attrs) : resource(dir:'ajaxUpload',file:'upload')
+
+        out << g.javascript([:], """
             var au_${uploaderUid} = new qq.FileUploader({
             element: document.getElementById('au-${uploaderUid}'),
-        """
-
-        String url = attrs.url ? createLink(attrs) : '/ajaxUpload/upload'
-        out << """
             action: '${url}'
+        """+
+
+        doAttributes(attrs)+
+        doParamsBlock(attrs)+
+
         """
-
-        out << doAttributes(attrs)
-        out << doParamsBlock(attrs)
-
-        out << """
             });
-        """
+        """)
     }
 
     private String doAttributes(Map<String, String> attrs) {

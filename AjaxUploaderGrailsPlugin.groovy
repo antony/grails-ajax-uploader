@@ -1,4 +1,4 @@
-class GrailsAjaxUploaderGrailsPlugin {
+class AjaxUploaderGrailsPlugin {
     // the plugin version
     def version = "0.1"
     // the version or versions of Grails the plugin is designed for
@@ -11,15 +11,15 @@ class GrailsAjaxUploaderGrailsPlugin {
     ]
 
     // TODO Fill in these fields
-    def author = "Your name"
-    def authorEmail = ""
-    def title = "Plugin summary/headline"
-    def description = '''\\
-Brief description of the plugin.
-'''
+    def author = "Antony Jones"
+    def authorEmail = "aj@desirableobjects.co.uk"
+    def title = "Ajax Uploader Plugin"
+    def description = '''Highly configurable cross-browser, ajax-based file uploader.
+    Displays a progress bar whilst uploading, allows restriction by filetype, and multiple file upload.
 
-    // URL to the plugin's documentation
-    def documentation = "http://grails.org/plugin/grails-ajax-uploader"
+    Based on Valums 'ajax uploader' javascript.'''
+
+    def documentation = "http://grails.org/plugin/ajax-uploader"
 
     def doWithWebDescriptor = { xml ->
         // TODO Implement additions to web.xml (optional), this event occurs before 
