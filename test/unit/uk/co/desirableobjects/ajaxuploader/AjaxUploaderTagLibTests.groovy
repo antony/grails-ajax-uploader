@@ -13,6 +13,7 @@ class AjaxUploaderTagLibTests extends TagLibUnitTestCase {
     static final Map EXAMPLE_PARAMETERS = [myKey: 'myValue', myOtherKey: 5]
     static final String DUMMY_PLUGIN_CONTEXT_PATH = 'plugins/ajax-uploader-1.0'
     static final String DUMMY_CALLBACK = "alert(filename+' yadda yadda')"
+    static final Closure BLANK_TAG_BODY = { return "" }
 
     protected void setUp() {
         super.setUp()
@@ -70,7 +71,7 @@ class AjaxUploaderTagLibTests extends TagLibUnitTestCase {
 
     void testOutputsBasicUploaderContainer() {
 
-        tagLib.uploader([id:uploaderUid, url:[]], "")
+        tagLib.uploader([id:uploaderUid, url:[]], BLANK_TAG_BODY)
 
         assertContains """<div id="au-${uploaderUid}">"""
 
@@ -78,7 +79,7 @@ class AjaxUploaderTagLibTests extends TagLibUnitTestCase {
 
     void testCreatesJavascriptFileUploader() {
 
-        tagLib.uploader([id:uploaderUid, url:[controller:'file', action:'upload']], "")
+        tagLib.uploader([id:uploaderUid, url:[controller:'file', action:'upload']], BLANK_TAG_BODY)
 
         assertContains '<script type="text/javascript">'
         assertContains 'var au_testAjaxUploader = new qq.FileUploader({'
@@ -90,7 +91,7 @@ class AjaxUploaderTagLibTests extends TagLibUnitTestCase {
 
     void testMissingUrlParameterUsesDefaultController() {
 
-        tagLib.uploader([id:uploaderUid], "")
+        tagLib.uploader([id:uploaderUid], BLANK_TAG_BODY)
 
         assertContains "action: '/ajaxUpload/upload'"
 
@@ -98,7 +99,7 @@ class AjaxUploaderTagLibTests extends TagLibUnitTestCase {
 
     void testValidAttributeValue() {
 
-        tagLib.uploader([id:uploaderUid, url:[], debug:'false'], "")
+        tagLib.uploader([id:uploaderUid, url:[], debug:'false'], BLANK_TAG_BODY)
 
         assertContains "debug: false"
 
@@ -107,7 +108,7 @@ class AjaxUploaderTagLibTests extends TagLibUnitTestCase {
     void testInvalidAttributeValue() {
 
         shouldFail(InvalidAttributeValueException.class) {
-            tagLib.uploader([id:uploaderUid, url:[], debug:'unfail'], "")
+            tagLib.uploader([id:uploaderUid, url:[], debug:'unfail'], BLANK_TAG_BODY)
         }
 
     }
@@ -115,7 +116,7 @@ class AjaxUploaderTagLibTests extends TagLibUnitTestCase {
     void testUnknownAttribute() {
 
         shouldFail(UnknownAttributeException.class) {
-            tagLib.uploader([id:uploaderUid, url:[], notknown:'anyvalue'], "")
+            tagLib.uploader([id:uploaderUid, url:[], notknown:'anyvalue'], BLANK_TAG_BODY)
         }
 
     }
@@ -123,22 +124,30 @@ class AjaxUploaderTagLibTests extends TagLibUnitTestCase {
     void testInvalidParamsBlock() {
 
         shouldFail(InvalidAttributeValueException.class) {
-            tagLib.uploader([id:uploaderUid, url:[], params:"invalid"], "")
+            tagLib.uploader([id:uploaderUid, url:[], params:"invalid"], BLANK_TAG_BODY)
         }
 
     }
 
     void testParamsBlock() {
 
-        tagLib.uploader([id:uploaderUid, url:[], params:EXAMPLE_PARAMETERS], "")
+        tagLib.uploader([id:uploaderUid, url:[], params:EXAMPLE_PARAMETERS], BLANK_TAG_BODY)
 
         assertContains '''myKey: 'myValue', myOtherKey: 5'''
 
     }
 
+    void testNoParamsMeansNoParamsBlock() {
+
+        tagLib.uploader([id:uploaderUid, url:[]], BLANK_TAG_BODY)
+
+        assertDoesNotContain 'params:'
+
+    }
+
     void testSeparatelyHandledAttributes() {
 
-        tagLib.uploader([id:uploaderUid, url:[], params:EXAMPLE_PARAMETERS], "")
+        tagLib.uploader([id:uploaderUid, url:[], params:EXAMPLE_PARAMETERS], BLANK_TAG_BODY)
 
         assertDoesNotContain "[myKey: myValue, myOtherKey: 5]"
         assertDoesNotContain "id:testAjaxUploader"
@@ -151,7 +160,7 @@ class AjaxUploaderTagLibTests extends TagLibUnitTestCase {
         String onCompleteFunction = "alert(filename+' is complete')"
 
         tagLib.uploader([id:uploaderUid],
-            tagLib.onComplete([:], { return onCompleteFunction })
+                { return tagLib.onComplete([:], { return onCompleteFunction }) }
         )
 
         assertContains "onComplete: function(id, fileName, responseJSON) { ${onCompleteFunction} }"
@@ -163,7 +172,7 @@ class AjaxUploaderTagLibTests extends TagLibUnitTestCase {
         String onSubmitFunction = "alert(filename+' is submitted')"
 
         tagLib.uploader([id:uploaderUid],
-            tagLib.onSubmit([:], { return onSubmitFunction })
+                { return tagLib.onSubmit([:], { return onSubmitFunction }) }
         )
 
         assertContains "onSubmit: function(id, fileName) { ${onSubmitFunction} }"
@@ -173,7 +182,7 @@ class AjaxUploaderTagLibTests extends TagLibUnitTestCase {
     void testOnProgressCallback() {
 
         tagLib.uploader([id:uploaderUid],
-            tagLib.onProgress([:], { return DUMMY_CALLBACK })
+                { return tagLib.onProgress([:], { return DUMMY_CALLBACK }) }
         )
 
         assertContains "onProgress: function(id, fileName, loaded, total) { ${DUMMY_CALLBACK} }"
@@ -183,7 +192,7 @@ class AjaxUploaderTagLibTests extends TagLibUnitTestCase {
     void testOnCancelCallback() {
 
         tagLib.uploader([id:uploaderUid],
-            tagLib.onCancel([:], { return DUMMY_CALLBACK })
+                { return tagLib.onCancel([:], { return DUMMY_CALLBACK }) }
         )
 
         assertContains "onCancel: function(id, fileName) { ${DUMMY_CALLBACK} }"
@@ -193,17 +202,37 @@ class AjaxUploaderTagLibTests extends TagLibUnitTestCase {
     void testShowMessage() {
 
         tagLib.uploader([id:uploaderUid],
-            tagLib.showMessage([:], { return DUMMY_CALLBACK })
+                { return tagLib.showMessage([:], { return DUMMY_CALLBACK }) }
         )
 
         assertContains "showMessage: function(message) { ${DUMMY_CALLBACK} }"
 
     }
 
+    void testCallbackTagWithoutEnclosingUploader() {
+
+        shouldFail(IllegalStateException.class) {
+            return tagLib.showMessage([:], { return DUMMY_CALLBACK })
+        }
+
+    }
+
+    /** Not until 0.3
+    void testNoScriptBlock() {
+
+        final String NOSCRIPT_BLOCK = "<h1>No JS!?</h1>"
+
+        tagLib.uploader([id:uploaderUid],
+                { return tagLib.noScript([:], { return NOSCRIPT_BLOCK }) }
+        )
+
+        assertContains "<noscript>${NOSCRIPT_BLOCK}</noscript>"
+
+    }
+    **/
+
     private assertContains(String expected) {
-
         assertTrue tagLib.out.toString().contains(expected)
-
     }
 
     private assertDoesNotContain(String unexpected) {

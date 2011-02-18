@@ -6,7 +6,7 @@ import uk.co.desirableobjects.ajaxuploader.exception.InvalidAttributeValueExcept
 
 class AjaxUploaderTagLib {
 
-    String callbackFunctions
+    String currentUploaderUid = null
 
     static final Map<String, List<String>> REQUIRED_ATTRIBUTES = [
             id: []
@@ -47,10 +47,10 @@ class AjaxUploaderTagLib {
 
         validateAttributes(attrs)
 
-        String uploaderUid = attrs.id
+        currentUploaderUid = attrs.id
 
         out << """
-            <div id="au-${uploaderUid}">
+            <div id="au-${currentUploaderUid}">
                 <noscript>
                     <p>Please enable JavaScript to use file uploader.</p>
                 </noscript>
@@ -60,24 +60,21 @@ class AjaxUploaderTagLib {
         String url = attrs.url ? createLink(attrs) : resource(dir:'ajaxUpload',file:'upload')
 
         out << g.javascript([:], """
-            var au_${uploaderUid} = new qq.FileUploader({
-            element: document.getElementById('au-${uploaderUid}'),
+            var au_${currentUploaderUid} = new qq.FileUploader({
+            element: document.getElementById('au-${currentUploaderUid}'),
             action: '${url}'
         """+
 
         doAttributes(attrs)+
         doParamsBlock(attrs)+
-        doCallbacks(attrs)+
+
+        body()+
 
         """
             });
         """)
-    }
 
-    private String doCallbacks(Map<String, String> attrs) {
-
-        return callbackFunctions ?: ''
-
+        currentUploaderUid = null
     }
 
     private String doAttributes(Map<String, String> attrs) {
@@ -95,6 +92,10 @@ class AjaxUploaderTagLib {
     private String doParamsBlock(Map<String, String> attrs) {
 
         def parameters = attrs.params
+
+        if (!parameters) {
+            return ''
+        }
 
         if (!(parameters instanceof Map) && parameters) {
             throw new InvalidAttributeValueException('params', attrs.params, Map.class)
@@ -145,35 +146,46 @@ class AjaxUploaderTagLib {
 
     def onComplete = { attrs, body ->
 
-        callbackFunctions += """,
+        validateCallState()
+        out << """,
 onComplete: function(id, fileName, responseJSON) { ${body()} }"""
 
     }
 
+    private void validateCallState() {
+        if (!currentUploaderUid) {
+            throw new IllegalStateException(":callback tags can only be used inside an enclosing :uploader tag.")
+        }
+    }
+
     def onSubmit = { attrs, body ->
 
-        callbackFunctions += """,
+        validateCallState()
+        out << """,
 onSubmit: function(id, fileName) { ${body()} }"""
 
     }
 
     def onProgress = { attrs, body ->
 
-        callbackFunctions += """,
+        validateCallState()
+        out << """,
 onProgress: function(id, fileName, loaded, total) { ${body()} }"""
 
     }
 
     def onCancel = { attrs, body ->
 
-        callbackFunctions += """,
+        validateCallState()
+        out << """,
 onCancel: function(id, fileName) { ${body()} }"""
 
     }
 
     def showMessage = { attrs, body ->
 
-        callbackFunctions += """,
+        validateCallState()
+        out << """,
 showMessage: function(message) { ${body()} }"""
 
     }
