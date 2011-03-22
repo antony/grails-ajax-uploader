@@ -217,6 +217,13 @@ class AjaxUploaderTagLibTests extends TagLibUnitTestCase {
 
     }
 
+    void testEnsureStateIsResetAfterTag() {
+
+        testOnSubmitCallback()
+        testCallbackTagWithoutEnclosingUploader()
+
+    }
+
     /** Not until 0.3
     void testNoScriptBlock() {
 
