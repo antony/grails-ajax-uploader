@@ -4,22 +4,45 @@ import grails.test.ControllerUnitTestCase
 
 class AjaxUploadControllerTests extends ControllerUnitTestCase {
 
+    private boolean randomTemporaryFileCreated = false
+    private boolean preconfiguredTemporaryFileCreated = false
+
+    void setUp() {
+        super.setUp()
+
+        File.metaClass.static.createTempFile = { String prefix, String suffix ->
+            randomTemporaryFileCreated = true
+            return new File('xyz', 'my.file')
+        }
+
+        File.metaClass.constructor = { String fileName ->
+            preconfiguredTemporaryFileCreated = true
+            return new File('xyz', 'preconfigured.file')
+        }
+        
+        assert !randomTemporaryFileCreated && !preconfiguredTemporaryFileCreated
+    }
+
+    void tearDown() {
+        super.tearDown()
+        assert !(randomTemporaryFileCreated && preconfiguredTemporaryFileCreated)
+    }
+
     void testJavaTempDirUsedWhenConfigurationMissing() {
 
         mockConfig ''
-        File tempFile = new File().createTemporaryFile('x', 'y')
-
-        String intendedPath = tempFile.absolutePath
-
-        tempFile.delete()
-
-        assert !new File(intendedPath).exists()
-
-        File.metaClass.createTemporaryFile { String prefix, String suffix -> return new File(intendedPath) }
 
         controller.upload()
+        assert randomTemporaryFileCreated
 
-        assert new File(intendedPath).exists()
+    }
+
+    void testConfiguredTemporaryFileUsedWhenConfigurationPresent() {
+
+        mockConfig "imageUpload.temporaryFile = '/tmp/preconfigured.file'"
+
+        controller.upload()
+        assert preconfiguredTemporaryFileCreated
 
     }
 

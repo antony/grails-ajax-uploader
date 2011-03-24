@@ -6,14 +6,11 @@ import static org.codehaus.groovy.grails.commons.ConfigurationHolder.config as C
 class AjaxUploadController {
 
     def upload = {
-
-        println "Uploading..."
-
         try {
 
             File uploaded
             if (Config.imageUpload.containsKey('temporaryFile')) {
-              uploaded = new File("${temporaryFile}")
+              uploaded = new File("${Config.imageUpload.temporaryFile}")
             } else {
               uploaded = File.createTempFile('grails', 'ajaxupload')
             }
