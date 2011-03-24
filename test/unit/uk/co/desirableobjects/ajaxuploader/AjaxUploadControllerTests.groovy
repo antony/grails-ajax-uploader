@@ -1,24 +1,37 @@
 package uk.co.desirableobjects.ajaxuploader
 
 import grails.test.ControllerUnitTestCase
+import org.springframework.mock.web.MockMultipartHttpServletRequest
+import org.springframework.mock.web.MockMultipartFile
+import javax.servlet.http.HttpServletResponse
+import org.gmock.WithGMock
+import java.lang.reflect.Method
+import org.codehaus.groovy.runtime.MethodClosure
 
+@WithGMock
 class AjaxUploadControllerTests extends ControllerUnitTestCase {
 
     private boolean randomTemporaryFileCreated = false
     private boolean preconfiguredTemporaryFileCreated = false
+    private File randomFile = new File('xyz', 'my.file')
+    private File preconfiguredFile = new File('xyz', 'preconfigured.file')
 
     void setUp() {
         super.setUp()
 
         File.metaClass.static.createTempFile = { String prefix, String suffix ->
             randomTemporaryFileCreated = true
-            return new File('xyz', 'my.file')
+            return randomFile
         }
 
         File.metaClass.constructor = { String fileName ->
             preconfiguredTemporaryFileCreated = true
-            return new File('xyz', 'preconfigured.file')
+            return preconfiguredFile
         }
+
+        mockConfig ''
+        AjaxUploaderService ajaxUploaderServiceMock = mock(AjaxUploaderService)
+        controller.ajaxUploaderService = ajaxUploaderServiceMock
         
         assert !randomTemporaryFileCreated && !preconfiguredTemporaryFileCreated
     }
@@ -26,13 +39,17 @@ class AjaxUploadControllerTests extends ControllerUnitTestCase {
     void tearDown() {
         super.tearDown()
         assert !(randomTemporaryFileCreated && preconfiguredTemporaryFileCreated)
+        File.metaClass = null
+
     }
 
     void testJavaTempDirUsedWhenConfigurationMissing() {
 
-        mockConfig ''
+        controller.ajaxUploaderService.upload(null, randomFile)
 
-        controller.upload()
+        play {
+            controller.upload()
+        }
         assert randomTemporaryFileCreated
 
     }
@@ -40,10 +57,29 @@ class AjaxUploadControllerTests extends ControllerUnitTestCase {
     void testConfiguredTemporaryFileUsedWhenConfigurationPresent() {
 
         mockConfig "imageUpload.temporaryFile = '/tmp/preconfigured.file'"
+        controller.ajaxUploaderService.upload(null, preconfiguredFile)
 
-        controller.upload()
+        play {
+            controller.upload()
+        }
         assert preconfiguredTemporaryFileCreated
 
     }
+
+    /**
+    void testNonJavascriptUploadIsDetected() {
+
+        def imgContentType = 'image/jpeg'
+        def imgContentBytes = '123' as byte[]
+
+        controller.metaClass.request = new MockMultipartHttpServletRequest()
+        controller.request.addFile(
+            new MockMultipartFile('image', 'myImage.jpg', imgContentType, imgContentBytes)
+        )
+
+        controller.upload()
+
+    }
+ **/
 
 }

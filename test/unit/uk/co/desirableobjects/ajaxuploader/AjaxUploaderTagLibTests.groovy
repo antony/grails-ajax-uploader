@@ -36,7 +36,7 @@ class AjaxUploaderTagLibTests extends TagLibUnitTestCase {
 
     void testCssInclude() {
 
-        tagLib.head([:], "")
+        tagLib.head([:], BLANK_TAG_BODY)
 
         assertContains '<style type="text/css" media="screen">'
         assertContains "@import url( /${DUMMY_PLUGIN_CONTEXT_PATH}/css/uploader.css );"
@@ -46,7 +46,7 @@ class AjaxUploaderTagLibTests extends TagLibUnitTestCase {
 
     void testJsInclude() {
 
-         tagLib.head([:], "")
+         tagLib.head([:], BLANK_TAG_BODY)
 
          assertContains """<script type="text/javascript" src="ajax-uploader/js/fileuploader.js">"""
 
@@ -54,7 +54,7 @@ class AjaxUploaderTagLibTests extends TagLibUnitTestCase {
 
     void testExcludeCss() {
 
-        tagLib.head([css:'/myapp/mycss.css'], "")
+        tagLib.head([css:'/myapp/mycss.css'], BLANK_TAG_BODY)
 
         assertDoesNotContain '@import url( /css/uploader.css )'
         assertContains '@import url( /myapp/mycss.css )'
@@ -243,6 +243,6 @@ class AjaxUploaderTagLibTests extends TagLibUnitTestCase {
     }
 
     private assertDoesNotContain(String unexpected) {
-        assert tagLib.out.toString().contains(unexpected)
+        assert !tagLib.out.toString().contains(unexpected)
     }
 }
