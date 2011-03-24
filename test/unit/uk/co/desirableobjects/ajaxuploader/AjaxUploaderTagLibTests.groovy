@@ -239,10 +239,10 @@ class AjaxUploaderTagLibTests extends TagLibUnitTestCase {
     **/
 
     private assertContains(String expected) {
-        assertTrue tagLib.out.toString().contains(expected)
+        assert tagLib.out.toString().contains(expected)
     }
 
     private assertDoesNotContain(String unexpected) {
-        assertFalse tagLib.out.toString().contains(unexpected)
+        assert tagLib.out.toString().contains(unexpected)
     }
 }

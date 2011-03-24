@@ -7,14 +7,24 @@ class AjaxUploadController {
 
     def upload = {
 
+        println "Uploading..."
+
         try {
-            File uploaded = new File("${Config.imageUpload.temporaryFile}")
+
+            File uploaded
+            if (Config.imageUpload.containsKey('temporaryFile')) {
+              uploaded = new File("${temporaryFile}")
+            } else {
+              uploaded = File.createTempFile('grails', 'ajaxupload')
+            }
+
             uploaded << request.inputStream
 
             return render([success:true] as JSON)
 
         } catch (Exception e) {
 
+            log.error("Failed to upload file.", e)
             return render([success:false] as JSON)
 
         }
