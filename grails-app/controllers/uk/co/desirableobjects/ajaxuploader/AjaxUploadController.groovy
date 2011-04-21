@@ -4,6 +4,10 @@ import grails.converters.JSON
 import static org.codehaus.groovy.grails.commons.ConfigurationHolder.config as Config
 import org.springframework.http.HttpStatus
 import uk.co.desirableobjects.ajaxuploader.exception.FileUploadException
+import org.springframework.web.multipart.MultipartHttpServletRequest
+import org.springframework.web.multipart.commons.CommonsMultipartFile
+import org.springframework.web.multipart.MultipartFile
+import javax.servlet.http.HttpServletRequest
 
 class AjaxUploadController {
 
@@ -13,8 +17,9 @@ class AjaxUploadController {
         try {
 
             File uploaded = createTemporaryFile()
+            InputStream inputStream = selectInputStream(request)
 
-            ajaxUploaderService.upload(request.inputStream, uploaded)
+            ajaxUploaderService.upload(inputStream, uploaded)
 
             return render([success:true] as JSON)
 
@@ -25,6 +30,14 @@ class AjaxUploadController {
 
         }
 
+    }
+
+    private InputStream selectInputStream(HttpServletRequest request) {
+        if (request instanceof MultipartHttpServletRequest) {
+            MultipartFile uploadedFile = ((MultipartHttpServletRequest) request).getFile('qqfile')
+            return uploadedFile.inputStream
+        }
+        return request.inputStream
     }
 
     private File createTemporaryFile() {

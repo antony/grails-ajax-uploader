@@ -7,6 +7,7 @@ import javax.servlet.http.HttpServletResponse
 import org.gmock.WithGMock
 import java.lang.reflect.Method
 import org.codehaus.groovy.runtime.MethodClosure
+import org.springframework.web.multipart.MultipartHttpServletRequest
 
 @WithGMock
 class AjaxUploadControllerTests extends ControllerUnitTestCase {
@@ -63,6 +64,25 @@ class AjaxUploadControllerTests extends ControllerUnitTestCase {
             controller.upload()
         }
         assert preconfiguredTemporaryFileCreated
+
+    }
+
+    void testInternetExplorerUploadFunctionality() {
+
+        String imgContentType = 'image/jpeg'
+        byte[] imgContentBytes = '123' as byte[]
+
+        controller.metaClass.request = new MockMultipartHttpServletRequest()
+	    controller.request.addFile(
+	        new MockMultipartFile('qqfile', 'myImage.jpg', imgContentType, imgContentBytes)
+	    )
+        controller.ajaxUploaderService.upload(match { it instanceof ByteArrayInputStream }, randomFile)
+
+        play {
+            controller.upload()
+        }
+
+        assert randomTemporaryFileCreated
 
     }
 

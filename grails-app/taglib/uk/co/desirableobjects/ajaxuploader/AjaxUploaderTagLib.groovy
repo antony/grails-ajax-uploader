@@ -19,6 +19,7 @@ class AjaxUploaderTagLib {
             debug: ['true', 'false'],
             params: [],
             messages: [],
+            multiple: ['true', 'false'],
             url: []
     ]
 
