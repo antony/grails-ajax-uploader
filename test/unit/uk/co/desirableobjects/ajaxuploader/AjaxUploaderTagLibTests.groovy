@@ -224,7 +224,6 @@ class AjaxUploaderTagLibTests extends TagLibUnitTestCase {
 
     }
 
-    /** Not until 0.3
     void testNoScriptBlock() {
 
         final String NOSCRIPT_BLOCK = "<h1>No JS!?</h1>"
@@ -233,10 +232,11 @@ class AjaxUploaderTagLibTests extends TagLibUnitTestCase {
                 { return tagLib.noScript([:], { return NOSCRIPT_BLOCK }) }
         )
 
-        assertContains "<noscript>${NOSCRIPT_BLOCK}</noscript>"
+        assertContains """<noscript>
+                    ${NOSCRIPT_BLOCK}
+                </noscript>"""
 
     }
-    **/
 
     private assertContains(String expected) {
         assert tagLib.out.toString().contains(expected)

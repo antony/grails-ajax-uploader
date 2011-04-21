@@ -7,6 +7,8 @@ import uk.co.desirableobjects.ajaxuploader.exception.InvalidAttributeValueExcept
 class AjaxUploaderTagLib {
 
     String currentUploaderUid = null
+    StringWriter htmlOut = new StringWriter()
+    StringWriter jsOut = new StringWriter()
 
     static final Map<String, List<String>> REQUIRED_ATTRIBUTES = [
             id: []
@@ -50,15 +52,9 @@ class AjaxUploaderTagLib {
 
         currentUploaderUid = attrs.id
 
-        out << """
-            <div id="au-${currentUploaderUid}">
-                <noscript>
-                    <p>Please enable JavaScript to use file uploader.</p>
-                </noscript>
-            </div>
-        """
-
         String url = attrs.url ? createLink(attrs) : resource(dir:'ajaxUpload',file:'upload')
+
+        body()
 
         out << g.javascript([:], """
             var au_${currentUploaderUid} = new qq.FileUploader({
@@ -69,11 +65,19 @@ class AjaxUploaderTagLib {
         doAttributes(attrs)+
         doParamsBlock(attrs)+
 
-        body()+
+        jsOut.toString()+
 
         """
             });
         """)
+
+        out << """
+            <div id="au-${currentUploaderUid}">
+                <noscript>
+                    ${htmlOut}
+                </noscript>
+            </div>
+        """
 
         currentUploaderUid = null
     }
@@ -148,8 +152,9 @@ class AjaxUploaderTagLib {
     def onComplete = { attrs, body ->
 
         validateCallState()
-        out << """,
+        jsOut << """,
 onComplete: function(id, fileName, responseJSON) { ${body()} }"""
+        return ''
 
     }
 
@@ -162,32 +167,43 @@ onComplete: function(id, fileName, responseJSON) { ${body()} }"""
     def onSubmit = { attrs, body ->
 
         validateCallState()
-        out << """,
+        jsOut << """,
 onSubmit: function(id, fileName) { ${body()} }"""
+        return ''
 
     }
 
     def onProgress = { attrs, body ->
 
         validateCallState()
-        out << """,
+        jsOut << """,
 onProgress: function(id, fileName, loaded, total) { ${body()} }"""
+        return ''
 
     }
 
     def onCancel = { attrs, body ->
 
         validateCallState()
-        out << """,
+        jsOut << """,
 onCancel: function(id, fileName) { ${body()} }"""
+        return ''
 
     }
 
     def showMessage = { attrs, body ->
 
         validateCallState()
-        out << """,
+        jsOut << """,
 showMessage: function(message) { ${body()} }"""
+        return ''
+
+    }
+
+    def noScript = { attrs, body ->
+
+        htmlOut << "${body()}"
+        return ''
 
     }
 
