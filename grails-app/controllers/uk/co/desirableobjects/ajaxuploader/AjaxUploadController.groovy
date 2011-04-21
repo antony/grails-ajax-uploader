@@ -21,12 +21,12 @@ class AjaxUploadController {
 
             ajaxUploaderService.upload(inputStream, uploaded)
 
-            return render([success:true] as JSON)
+            return render(text: [success:true] as JSON, contentType:'text/json')
 
         } catch (FileUploadException e) {
 
             log.error("Failed to upload file.", e)
-            return render(text: [success:false] as JSON)
+            return render(text: [success:false] as JSON, contentType:'text/json')
 
         }
 
