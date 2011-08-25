@@ -79,7 +79,15 @@ class AjaxUploaderTagLib {
             });
         """)
 
+        reset()
+    }
+
+    private def reset() {
+
         currentUploaderUid = null
+        jsOut = new StringWriter()
+        htmlOut = new StringWriter()
+        
     }
 
     private String doAttributes(Map<String, String> attrs) {

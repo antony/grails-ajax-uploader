@@ -6,6 +6,7 @@ import org.codehaus.groovy.grails.plugins.web.taglib.RenderTagLib
 import uk.co.desirableobjects.ajaxuploader.exception.MissingRequiredAttributeException
 import uk.co.desirableobjects.ajaxuploader.exception.UnknownAttributeException
 import uk.co.desirableobjects.ajaxuploader.exception.InvalidAttributeValueException
+import java.util.regex.Matcher
 
 class AjaxUploaderTagLibTests extends TagLibUnitTestCase {
 
@@ -235,6 +236,23 @@ class AjaxUploaderTagLibTests extends TagLibUnitTestCase {
         assertContains """<noscript>
                     ${NOSCRIPT_BLOCK}
                 </noscript>"""
+
+    }
+
+    void testEnsureCallbacksAppearOnlyOnce() {
+
+        String onCompleteFunction = "alert(filename+' is complete')"
+
+        tagLib.uploader([id:uploaderUid],
+                { return tagLib.onComplete([:], { return onCompleteFunction }) }
+        )
+        
+        tagLib.uploader([id:uploaderUid],
+                { return tagLib.onComplete([:], { return onCompleteFunction }) }
+        )
+
+        Matcher matcher = tagLib.out.toString() =~ "onComplete: "
+        assert matcher.size() == 2
 
     }
 
