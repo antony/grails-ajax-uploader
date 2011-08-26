@@ -243,13 +243,11 @@ class AjaxUploaderTagLibTests extends TagLibUnitTestCase {
 
         String onCompleteFunction = "alert(filename+' is complete')"
 
-        tagLib.uploader([id:uploaderUid],
-                { return tagLib.onComplete([:], { return onCompleteFunction }) }
-        )
-        
-        tagLib.uploader([id:uploaderUid],
-                { return tagLib.onComplete([:], { return onCompleteFunction }) }
-        )
+        2.times {
+            tagLib.uploader([id:uploaderUid],
+                    { return tagLib.onComplete([:], { return onCompleteFunction }) }
+            )
+        }
 
         Matcher matcher = tagLib.out.toString() =~ "onComplete: "
         assert matcher.size() == 2

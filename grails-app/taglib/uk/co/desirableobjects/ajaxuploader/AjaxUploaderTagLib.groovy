@@ -85,8 +85,7 @@ class AjaxUploaderTagLib {
     private def reset() {
 
         currentUploaderUid = null
-        jsOut = new StringWriter()
-        htmlOut = new StringWriter()
+        [jsOut, htmlOut]*.buffer*.length = 0
         
     }
 
