@@ -16,6 +16,7 @@ class AjaxUploadControllerTests extends ControllerUnitTestCase {
     private boolean preconfiguredTemporaryFileCreated = false
     private File randomFile = new File('xyz', 'my.file')
     private File preconfiguredFile = new File('xyz', 'preconfigured.file')
+    private File anyFile = new File('lerp', 'derp')
 
     void setUp() {
         super.setUp()
@@ -26,7 +27,9 @@ class AjaxUploadControllerTests extends ControllerUnitTestCase {
         }
 
         File.metaClass.constructor = { String fileName ->
-            println "Constructor Call."
+            if (fileName.contains('.groovy')) {
+                return anyFile
+            }
             preconfiguredTemporaryFileCreated = true
             return preconfiguredFile
         }

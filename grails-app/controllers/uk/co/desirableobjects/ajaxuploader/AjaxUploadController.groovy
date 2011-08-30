@@ -42,7 +42,7 @@ class AjaxUploadController {
 
     private File createTemporaryFile() {
         File uploaded
-        if (Config.imageUpload.containsKey('temporaryFile')) {
+        if (Config.imageUpload?.containsKey('temporaryFile')) {
             uploaded = new File("${Config.imageUpload.temporaryFile}")
         } else {
             uploaded = File.createTempFile('grails', 'ajaxupload')
