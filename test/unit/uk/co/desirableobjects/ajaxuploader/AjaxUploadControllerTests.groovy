@@ -26,6 +26,7 @@ class AjaxUploadControllerTests extends ControllerUnitTestCase {
         }
 
         File.metaClass.constructor = { String fileName ->
+            println "Constructor Call."
             preconfiguredTemporaryFileCreated = true
             return preconfiguredFile
         }
