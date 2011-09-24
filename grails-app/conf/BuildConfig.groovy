@@ -29,6 +29,8 @@ grails.project.dependency.resolution = {
         test 'org.gmock:gmock:0.8.1'
     }
     plugins {
-        build ':maven-publisher:0.8.1'
+
+        build ':release:1.0.0.RC3'
+
     }
 }
