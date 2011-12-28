@@ -17,8 +17,9 @@ grails.project.dependency.resolution = {
 
         // uncomment the below to enable remote dependency resolution
         // from public Maven repositories
-        mavenLocal()
+        mavenLocal(null)
         mavenCentral()
+        mavenRepo "http://repo.desirableobjects.co.uk"
         //mavenRepo "http://snapshots.repository.codehaus.org"
         //mavenRepo "http://repository.codehaus.org"
         //mavenRepo "http://download.java.net/maven/2/"
@@ -27,11 +28,13 @@ grails.project.dependency.resolution = {
     dependencies {
         // specify dependencies here under either 'build', 'compile', 'runtime', 'test' or 'provided' scopes eg.
 
-        test 'org.gmock:gmock:0.8.1'
+        test 'org.gmock:gmock:0.8.2'
     }
     plugins {
 
-        build ':release:1.0.0.RC3'
+        build ':release:1.0.0', {
+            export = false
+        }
 
     }
 }
