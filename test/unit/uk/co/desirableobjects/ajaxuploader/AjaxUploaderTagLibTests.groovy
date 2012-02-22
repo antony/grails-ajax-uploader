@@ -134,7 +134,9 @@ class AjaxUploaderTagLibTests extends TagLibUnitTestCase {
 
         tagLib.uploader([id:uploaderUid, url:[], params:EXAMPLE_PARAMETERS], BLANK_TAG_BODY)
 
-        assertContains '''myKey: 'myValue', myOtherKey: 5'''
+        assertContains '''params: {
+    myKey: 'myValue', myOtherKey: 5
+}'''
 
     }
 

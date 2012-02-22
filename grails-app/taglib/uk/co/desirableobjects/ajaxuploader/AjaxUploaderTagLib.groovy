@@ -67,8 +67,7 @@ class AjaxUploaderTagLib {
         out << g.javascript([:], """
             var au_${currentUploaderUid} = new qq.FileUploader({
             element: document.getElementById('au-${currentUploaderUid}'),
-            action: '${url}'
-        """+
+            action: '${url}'"""+
 
         doAttributes(attrs)+
         doParamsBlock(attrs)+
@@ -113,21 +112,16 @@ class AjaxUploaderTagLib {
             throw new InvalidAttributeValueException('params', attrs.params, Map.class)
         }
 
-        StringBuffer paramsBlock = new StringBuffer()
+        List paramsBlock = []
 
-        paramsBlock.append(''',
-                params: {''')
         parameters.each { java.util.Map.Entry entry ->
-            if (entry.value instanceof String) {
-                paramsBlock.append("""${entry.key}: '${entry.value}', """)
-            } else {
-                paramsBlock.append("""${entry.key}: ${entry.value}, """)
-            }
+            paramsBlock << """${entry.key}: ${entry.value instanceof String ? "'${entry.value}'" : entry.value }"""
         }
-        paramsBlock.append('''
-        }''')
 
-        return paramsBlock.toString()
+        return """,
+            params: {
+    ${paramsBlock.join(", ")}
+}"""
     }
 
     private validateAttributes(Map<String, String> attributes) {
