@@ -106,6 +106,14 @@ class AjaxUploaderTagLibTests extends TagLibUnitTestCase {
 
     }
 
+    void testValidAllowedExtensions() {
+
+        tagLib.uploader([id:uploaderUid, url:[], allowedExtensions:['png', 'jpg', 'gif']], BLANK_TAG_BODY)
+
+        assertContains "debug: false"
+
+    }
+
     void testInvalidAttributeValue() {
 
         shouldFail(InvalidAttributeValueException.class) {

@@ -115,6 +115,7 @@ class AjaxUploaderTagLib {
         List paramsBlock = []
 
         parameters.each { java.util.Map.Entry entry ->
+
             paramsBlock << """${entry.key}: ${entry.value instanceof String ? "'${entry.value}'" : entry.value }"""
         }
 
