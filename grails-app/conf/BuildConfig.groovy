@@ -1,38 +1,28 @@
-grails.project.class.dir = "target/classes"
-grails.project.test.class.dir = "target/test-classes"
+grails.project.class.dir = "target/$grailsVersion/classes"
+grails.project.test.class.dir = "target/$grailsVersion/test-classes"
 grails.project.test.reports.dir = "target/test-reports"
 grails.release.scm.enabled=false
 
 grails.project.dependency.resolution = {
-    // inherit Grails' default dependencies
-    inherits("global") {
-        // uncomment to disable ehcache
-        // excludes 'ehcache'
-    }
-    log "warn" // log level of Ivy resolver, either 'error', 'warn', 'info', 'debug' or 'verbose'
+    inherits "global"
+    log "warn"
+
     repositories {
         grailsPlugins()
         grailsHome()
         grailsCentral()
 
-        // uncomment the below to enable remote dependency resolution
-        // from public Maven repositories
-        mavenLocal(null)
+        mavenLocal()
         mavenCentral()
         mavenRepo "http://repo.desirableobjects.co.uk"
-        //mavenRepo "http://snapshots.repository.codehaus.org"
-        //mavenRepo "http://repository.codehaus.org"
-        //mavenRepo "http://download.java.net/maven/2/"
-        //mavenRepo "http://repository.jboss.com/maven2/"
     }
     dependencies {
         // specify dependencies here under either 'build', 'compile', 'runtime', 'test' or 'provided' scopes eg.
-
-        test 'org.gmock:gmock:0.8.2'
+        test 'org.gmock:gmock:0.8.2', { export = false }
     }
     plugins {
 
-        build ':release:1.0.1', {
+        build ':release:2.0.4', {
             export = false
         }
 
