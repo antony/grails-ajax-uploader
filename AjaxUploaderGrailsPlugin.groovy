@@ -1,6 +1,6 @@
 class AjaxUploaderGrailsPlugin {
     // the plugin version
-    def version = "1.1"
+    def version = "1.2-SNAPSHOT"
     // the version or versions of Grails the plugin is designed for
     def grailsVersion = "1.3.6 > *"
     // the other plugins this plugin depends on
@@ -14,37 +14,14 @@ class AjaxUploaderGrailsPlugin {
     def author = "Antony Jones"
     def authorEmail = "aj@desirableobjects.co.uk"
     def title = "Ajax Uploader Plugin"
-    def description = '''Highly configurable cross-browser, ajax-based file uploader.
-    Displays a progress bar whilst uploading, allows restriction by filetype, and multiple file upload.
+    def description = '''\
+Highly configurable cross-browser, ajax-based file uploader. Displays a progress bar whilst uploading,\
+allows restriction by filetype, and multiple file upload.
 
-    Based on Valums 'ajax uploader' javascript.'''
+Based on Andrew Valums' Javascript [ajax file uploader|http://valums.com/ajax-upload/].'''
 
+    def license = "MIT"
     def documentation = "http://grails.org/plugin/ajax-uploader"
-
-    def doWithWebDescriptor = { xml ->
-        // TODO Implement additions to web.xml (optional), this event occurs before 
-    }
-
-    def doWithSpring = {
-        // TODO Implement runtime spring config (optional)
-    }
-
-    def doWithDynamicMethods = { ctx ->
-        // TODO Implement registering dynamic methods to classes (optional)
-    }
-
-    def doWithApplicationContext = { applicationContext ->
-        // TODO Implement post initialization spring config (optional)
-    }
-
-    def onChange = { event ->
-        // TODO Implement code that is executed when any artefact that this plugin is
-        // watching is modified and reloaded. The event contains: event.source,
-        // event.application, event.manager, event.ctx, and event.plugin.
-    }
-
-    def onConfigChange = { event ->
-        // TODO Implement code that is executed when the project configuration changes.
-        // The event is the same as for 'onChange'.
-    }
+    def issueManagement = [system: "GitHub", url: "https://github.com/aiten/grails-ajax-uploader/issues"]
+    def scm = [url: "https://github.com/aiten/grails-ajax-uploader"]
 }
