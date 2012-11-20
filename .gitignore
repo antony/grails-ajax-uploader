@@ -8,3 +8,4 @@ out
 .classpath
 *.log
 .project
+web-app/WEB-INF/tld
