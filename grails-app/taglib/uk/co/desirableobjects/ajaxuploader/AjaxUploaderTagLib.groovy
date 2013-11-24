@@ -64,7 +64,8 @@ class AjaxUploaderTagLib {
             </div>
         """
 
-        out << g.javascript([:], """
+        out << g.javascript([:], '$(document).ready( function() {' +
+         """
             var au_${currentUploaderUid} = new qq.FileUploader({
             element: document.getElementById('au-${currentUploaderUid}'),
             action: '${url}'"""+
@@ -76,6 +77,7 @@ class AjaxUploaderTagLib {
 
         """
             });
+        });
         """)
 
         reset()
