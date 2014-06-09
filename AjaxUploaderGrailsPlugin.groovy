@@ -1,6 +1,6 @@
 class AjaxUploaderGrailsPlugin {
     // the plugin version
-    def version = "1.2-SNAPSHOT"
+    def version = "1.3"
     // the version or versions of Grails the plugin is designed for
     def grailsVersion = "1.3.6 > *"
     // the other plugins this plugin depends on
@@ -20,7 +20,7 @@ allows restriction by filetype, and multiple file upload.
 
 Based on Andrew Valums' Javascript [ajax file uploader|http://valums.com/ajax-upload/].'''
 
-    def license = "MIT"
+    def license = "ASL"
     def documentation = "http://grails.org/plugin/ajax-uploader"
     def issueManagement = [system: "GitHub", url: "https://github.com/aiten/grails-ajax-uploader/issues"]
     def scm = [url: "https://github.com/aiten/grails-ajax-uploader"]
