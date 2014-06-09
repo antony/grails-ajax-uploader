@@ -1,7 +1,8 @@
 package uk.co.desirableobjects.ajaxuploader
 
 import grails.converters.JSON
-import static org.codehaus.groovy.grails.commons.ConfigurationHolder.config as Config
+
+import static grails.util.Holders.config as grailsConfig
 import org.springframework.http.HttpStatus
 import uk.co.desirableobjects.ajaxuploader.exception.FileUploadException
 import org.springframework.web.multipart.MultipartHttpServletRequest
@@ -42,8 +43,8 @@ class AjaxUploadController {
 
     private File createTemporaryFile() {
         File uploaded
-        if (Config.imageUpload?.containsKey('temporaryFile')) {
-            uploaded = new File("${Config.imageUpload.temporaryFile}")
+        if (grailsConfig.imageUpload?.containsKey('temporaryFile')) {
+            uploaded = new File("${grailsConfig.imageUpload.temporaryFile}")
         } else {
             uploaded = File.createTempFile('grails', 'ajaxupload')
         }
